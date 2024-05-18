@@ -14,5 +14,6 @@ main = do
   serve HostAny port $ \(socket, address) -> do
     putStrLn $ "successfully connected client: " ++ show address
     Just req <- recv socket 1024
-    if req == "PING" then send socket "+PONG\r\n" else closeSock socket
+    BC.putStrLn req
+    if req == "*1\r\n$4\r\nPING\r\n" then send socket "+PONG\r\n" else closeSock socket
     closeSock socket
