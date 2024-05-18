@@ -4,16 +4,15 @@
 
 module Main (main) where
 
-import Network.Simple.TCP (HostPreference (HostAny), closeSock, serve)
+import qualified Data.ByteString.Char8 as BC
+import Network.Simple.TCP (HostPreference (HostAny), closeSock, recv, send, serve)
 
 main :: IO ()
 main = do
-  -- You can use print statements as follows for debugging, they'll be visible when running tests.
-  putStrLn "Logs from your program will appear here"
-
-  -- Uncomment this block to pass stage 1
   let port = "6379"
   putStrLn $ "Redis server listening on port " ++ port
   serve HostAny port $ \(socket, address) -> do
     putStrLn $ "successfully connected client: " ++ show address
+    Just req <- recv socket 1024
+    if req == "PING" then send socket "+PONG\r\n" else closeSock socket
     closeSock socket
